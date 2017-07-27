@@ -1,4 +1,10 @@
 h1 {
-  margin: auto;
-  text-align: center;
+  margin-top: 200px;
+  text-alight: center;
+  font-family: monospace;
+  letter-spacing: 1.5em;
+}
+
+h1:hover {
+  color: rgba(0, 0, 0, .4);
 }
