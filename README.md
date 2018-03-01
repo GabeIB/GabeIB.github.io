@@ -2,9 +2,13 @@
 ### Page0 HomePage
 menu:
 1. Projects <link to projects page>
-  1.1 Rocketry <link to prjects/Rocketry page>
-  1.2 OpenMill <ect>
-  1.3 Astrophysics
+
+    1.1 Rocketry <link to prjects/Rocketry page>
+  
+    1.2 OpenMill <ect>
+  
+    1.3 Astrophysics
+  
 2. Store
 3. About
 
