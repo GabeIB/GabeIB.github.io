@@ -14,9 +14,6 @@ body {
 	margin-bottom: 70px;
 }
 
-h1:hover {
-  color: rgba(0, 0, 0, .4);
-}
 h1{
 	list-style-type: none;
 }
@@ -87,9 +84,27 @@ h1{
 	margin-left: 200px;
 	overflow: hidden;
 	padding: 50px;
+	padding-left: 100px;
+	padding-right: 100px;
 	min-width: 500px;
+	width: 500px;
 }
 
 .blog {
 	font-family: Helvetica;
+	margin-left: 50px;
+}
+
+.blog .headder {
+	height: 80px;
+}
+
+.blog .title{
+	padding-left: 100px;
+	float: left;
+}
+
+.blog .date{
+	padding-right: 150px;
+	float: right;
 }
