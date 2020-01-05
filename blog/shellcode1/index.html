@@ -25,7 +25,7 @@
 			<div class="blog">
 				<div class="headder">
 					<h3 class="title">Windows x86 Shellcode : Loading DLL’s and Finding Functions</h3>
-					<h3 class="date">Jan 3rd, 2020</h3>
+					<h3 class="date">December 23, 2019</h3>
 				</div>
 				<p>In Aleph One's famous paper <a href="http://www-inst.eecs.berkeley.edu/~cs161/fa08/papers/stack_smashing.pdf" target="_blank">"Smashing the Stack for Fun and Profit"</a>, they explain the basics of using a stack overflow vulnerability to gain control of process execution. In their example, they point the hijacked instruction pointer to a small shellcode payload that spawns a shell on a Unix system. While shellcode often simply spawns a local shell on the target system, <b>the word shellcode refers to any self-contained piece of code suitable to be a payload in an exploit.</b></p>
 				<p>
@@ -97,7 +97,7 @@ CF 0D 01 C7 EB F0 89 F8 5B 5F 5E C2 08 00
 <p>Not bad!</p>
 <h4>Finding LoadLibraryA:</h4>
 <p>We want to find LoadLibraryA in kernel32.dll, but once we find it, we’ll want to load other libraries and find other procedures in those libraries as well. Thus, for the sake of space and laziness, we’ll write a single function that takes two parameters: the base address of a DLL, and the hash of the procedure name.</p>
-<p>The general idea is that we iterate through an array called AddressOfNames, hashing each name (I told you it would come in handy) until we find a match. We then save the index at which we found our match, and jump to that index in another array called AddressOfNamesOrdinals. The value retrieved from this array is the ordinal of the function we’re looking for. Finally, we use the ordinal to index into the AddressOfFunctions array to find the offset from the base address of the DLL to the function. All of these arrays are found in the IMAGE_EXPORT_DIRECTORY, which can be found in the IMAGE_DATA_DIRECTORY. Rather than tell you about all of the offsets, I’ll just show you the code to parse the PE file.</p>
+<p>The general idea is that we iterate through an array called AddressOfNames, hashing each name (I told you it would come in handy) until we find a match. We then save the index at which we found our match, and jump to that index in another array called AddressOfNamesOrdinals. The value retrieved from this array is the ordinal of the function we’re looking for. Finally, we use the ordinal to index into the AddressOfFunctions array to find the offset from the base address of the DLL to the function. All of these arrays are found in the IMAGE_EXPORT_DIRECTORY. Rather than tell you about all of the offsets, I’ll just show you the code to parse the PE file.</p>
 <pre><code contenteditable spellcheck="false">find_function_by_hash(dllBase, hash);
 find_function_by_hash:
 	pushad
