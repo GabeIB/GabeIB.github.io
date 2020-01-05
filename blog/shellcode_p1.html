@@ -139,7 +139,92 @@ find_function_by_hash:
 	push eax
 	call find_function_by_hash
 	retn</code></pre>
-<p>Voila! We can load DLL’s now, and find functions within those DLL’s using our find_function_by_hash function. With everything assembled, the shellcode looks like this.</p>
+<p>Voila! We can load DLL’s now, and find functions within those DLL’s using our find_function_by_hash function. This is the assembly all together:</p>
+<pre><code contenteditable spellcheck="false">get_LoadLibraryA:
+	call find_kernel32_base
+	push Hash
+	push eax
+	call find_function_by_hash
+	retn
+
+findFunctionByHash:
+	pushad
+	mov ebp, [esp + 0x24] #dll Base address -> ebp
+	mov eax, [ebp + 0x3c] #offset to PE signature -> eax
+	mov edx, [ebp + eax + 0x78] #relative address of IMAGE_EXPORT_DIRECTORY -> edx
+	add edx, ebp #add dll Base address to get the absolute address
+	mov ecx, [edx + 0x18] #number of functions to iterate through
+	mov ebx, [edx + 0x20] #relative address of AddressOfNames -> ebx
+	add ebx, ebp #add dll Base to get absolute address
+.loop:
+	jecxz .error #didn't find function matching hash
+	dec ecx
+	mov esi, [ebx+ecx*4] #esi holds the relative address of the function name
+	add esi, ebp #convert to absolute address
+	push 0 #name is ascii
+	push esi #push function name
+	call hash_string
+	cmp eax, [esp+0x28] #compare return val with hash val specified by parameter
+	jnz .loop
+	mov ebx, [edx+0x24] #relative address of AddressOfNamesOrdinals
+	add ebx, ebp
+	mov cx, [ebx+ecx*2] #each entry in the ordinal table is 2 bytes
+	mov ebx, [edx + 0x1c] #relative address of AddressOfFunctions
+	add ebx, ebp
+	mov eax, [ebx+ecx*4]
+	add eax, ebp #eax holds the absolute address of the function we're looking for
+	jmp .done
+.error:
+	xor eax, eax
+.done:
+	mov [esp+0x1c], eax #so that eax will remain through popad
+	popad
+	retn 8
+
+find_kernel32_base:
+	push esi
+	xor eax, eax
+	mov eax, [fs:eax+0x30] #eax holds pointer to PEB
+	mov eax, [eax + 0x0c] #eax holds pointer to PEB_LDR_DATA
+	mov esi, [eax + 0x1c] #esi holds pointer to LDR_Module link (DLL Data)
+.test:
+	mov eax, [esi + 0x18] #eax holds DLL Name string
+	push 1 #indicates to function that string is unicode
+	push eax
+	call hash_string #we'll talk about this soon
+	cmp eax, F3C0296F #compare return of hash_string to the hash of kernel32.dll
+	jz next
+	mov esi, [esi] #move to the next link in the list
+	jmp test
+.next:
+	mov eax, [esi+8] #kernel32 has been found. eax now holds the base address
+	pop esi
+	retn
+
+hash_string:
+	push esi
+	push edi
+	push ebx
+	mov esi, [esp+10] #pointer to first char in string
+	mov ebx, [esp+14] #1 if unicode, 0 if ascii
+	xor edi, edi
+	cld #ensure lods runs in the correct direction
+.loop:
+	xor eax, eax
+	lodsb
+	add esi, ebx #skips the 00 byte if unicode, does nothing if ascii
+	cmp al, ah
+	je .done #al has char - if it's equal to 00 then end of string
+	ror edi, 0x0d #rotate right 13
+	add edi, eax
+	jmp .loop
+.done:
+	mov eax, edi
+	pop ebx
+	pop edi
+	pop esi
+	retn 8</code></pre>
+<p>And with everything assembled, the shellcode looks like this.</p>
 <figure><pre><code contenteditable spellcheck="false">E8 57 00 00 00 68 8E 4E 0E EC 50 E8 01 00 00 00
 C3 60 8B 6C E4 24 8B 45 3C 8B 54 28 78 01 EA 8B
 4A 18 8B 5A 20 01 EB E3 29 49 8B 34 8B 01 EE 6A
