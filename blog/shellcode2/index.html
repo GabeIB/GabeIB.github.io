@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Gank Boy Industries</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+  </head>
+  <body>
+		<div id="sidebar">
+			<div id="logo">
+				<div>
+				<h2>GANK</h2>
+				<h2>BOY</h2>
+				</div>
+			</div>
+			<div id="menu">
+				<ul>
+					<li><a href="/">about</a></li>
+					<li><a href="/music.html">music</a></li>
+					<li><a href="/blog.html" id="on">blog</a></li>
+				</ul>
+			</div>
+		</div>
+		<div id="content">
+			<h1 id="title">BloG</h1>
+			<div class="blog">
+				<div class="headder">
+					<h3 class="title">Windows x86 Shellcode : Using DLL's Pt 2</h3>
+					<h3 class="date">January 4, 2019</h3>
+				</div>
+<p>In the <a href="/blog/shellcode1/">last</a> post, I wrote about how to load DLL's and find functions within them. I wrote a position independent method for finding the address of LoadLibraryA and a version of GetProcAddress that takes the base address of a DLL and the ror-13-additive hash of the name of the function you're looking for. We use the hash of strings rather than the strings themselves to save space in our shellcode and to add a thin layer of obfuscation.</p>
+<p>This time, I'll be using the functions from the last post to make a Hello World example. The shellcode will load the user32 DLL, find the address of MessageBoxA, and call it with the string "Hello World!" as an argument. We'll then take this shellcode and run it using a very basic buffer overflow.</p>
+<img src="./message_box.PNG" alt="message box with hello world"style="width:600px;">
+<h4>Writing the Shellcode:</h4>
+<p>The first thing that we're going to do is call find_kernel32_base. We're then going to push the return value and the hash for LoadLibraryA and call find_function_by_hash. We now should have the address of LoadLibraryA in the eax register; all we need to load user32.dll is to push the string "user32" and call eax.</p>
+<p>While we could make a stack string to pass to LoadLibraryA, it will use fewer bytes to include the string "user32" in our shellcode and push the address of the string. Since our shellcode is position independent, this requires finding the address of our shellcode on the fly. There are a couple ways to do this; however, we will use the call/pop method for the sake of simplicity.</p>
+<h4>Call/Pop:</h4>
+<p>Recall that when a call instruction is executed, the address of the byte directly following the call is pushed to the stack. In this sense, this</p>
+<pre><code contenteditable spellcheck="false">call .target</code></pre>
+<p>and this</p>
+<pre><code contenteditable spellcheck="false">push eip+7 #constant depends on number of opcode bytes for call
+jmp .target</code></pre>
+<p>are equivalent. Thus, if we execute a call instruction and then execute a pop instruction, we will have a pointer to a location within our shellcode. The following code uses this technique to put a pointer to the string "user32" in eax:</p>
+<pre><code contenteditable spellcheck="false">main:
+	call .target
+	db 'user32'0
+target:
+	pop eax</code></pre>
+			</div>
+		</div>
+  </body>
+</html>
