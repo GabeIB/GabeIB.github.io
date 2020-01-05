@@ -142,7 +142,7 @@ find_function_by_hash:
 <p>Voila! We can load DLL’s now, and find functions within those DLL’s using our find_function_by_hash function. This is the assembly all together:</p>
 <pre><code contenteditable spellcheck="false">get_LoadLibraryA:
 	call find_kernel32_base
-	push Hash
+	push EC0E4E8E
 	push eax
 	call find_function_by_hash
 	retn
