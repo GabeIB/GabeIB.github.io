@@ -21,10 +21,33 @@
 					<h3 class="title">Additive VST Synthesizer Prototype : A Short Demo</h3>
 					<h3 class="date">October 11, 2020</h3>
 				</div>
-				<p>In the following video, I give a brief demo of an additive synthesizer VST prototype that I made. The synth is written in C++ using the JUCE framework. Alone, the synthesizer is a basic sine wave additive synth - the defining feature of the VST is the intuitive interface for drawing envelopes, and the ability to generate independent amplitude envelopes for each partial. Additionally, I wrote a Python package for the synth that allows a user to programatially generate control data for the additive synth. I have used the synthesizer and the Python package to implement a synthesis technique called Oscillator Bank Resynthesis, though this is only one such possible use for an additive synthesizer with a Python interface. Because of the ability to programatically generate control data for the synthesizer, I believe this tool could be useful to those interested in sound.</p>
-				<iframe width="560" height="315" src="https://www.youtube.com/embed/hGioYaiKxAs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				<p>During my time at <a href="https://www.recurse.com">The Recurse Center</a> I was able to spend some time learning about audio programming. I dabbled in digital signal processing theory, Max/MSP, and <a href="https://www.tidalcycles.org">TidalCycles</a> for live coding, but the main focus of my time and energy was learning how to program VSTs in C++ with the JUCE framework.</p>
+				<p>As a capstone project, I developed an additive synthesizer VST with per-partial envelope control, and a Python interface for generating control data for the synth programatically. Below is a short video where I demo the synthesizer. The first part of the video is intended to show how the interface works, and the second part of the video shows a few interesting sounds I was able to make with the synth.
+				</p>
+				<iframe width="560" height="315" src="https://www.youtube.com/embed/QM96xJ5kcy8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<p>
+You may notice that the final sound that I demo in the video sounds a lot like a piano. I generated the control data for this sound by downloading a piano sample from the internet, and writing a Python script to analyze the sample and output control data for the synthesizer to immitate the sound. This is a technique called "Oscillator Bank Resynthesis", and I hope to cover it in more techniqual detail in a separate blog post; however, I think it demonstrates why it might be useful to have a Python interface on an additive synthesizer.
+</p>
 				<p>
-				I plan on writing a more detailed and technical explanation of the synthesizer's Python interface, as well as a bit about Oscillator Bank Resynthesis in the future.
+				Writing control data to the synthesizer from Python is easy as I've written a package to handle implementation details. The following example program creates three partials, adds a control point to each partial, and writes the preset file to "controlData.ctl":
+				</p>
+<pre><code contenteditable spellcheck="false">import EnvelopeSynth
+
+e = EnvelopeSynth.EnvelopeSynth()
+
+e.addPartial(400)
+e.addPartial(600)
+e.addPartial(900)
+
+e.addPoint(0, 0.5, 0.3) #adds point to 400Hz partial at t=0.5 amplitude=0.3
+e.addPoint(1, 0.2, 0.1)
+e.addPoint(2, 0.7, 0.5)
+
+e.save("controlData.ctl")</code></pre>
+<p>You can then load the controlData.ctl preset in the synthesizer to get the following:</p>
+<img src="python_synth.JPG" style="width:600px;">
+<p>
+This synthesizer is still a prototype, and there are a few key features I'll need to add before I can share the project publically. If you're interested in this project, or have an idea for a feature, feel free to send me an email, and I'll definitely get back to you.
 </p>
 			</div>
 		</div>
